@@ -2,13 +2,28 @@
 #define ABSELFPROGRAM_H
 
 #include <QObject>
+#include "elf.h"
 
 class AbsElfProgram : public QObject
 {
     Q_OBJECT
 public:
     explicit AbsElfProgram(QObject *parent = 0);
-    
+    AbsElfProgram(Elf_Phdr phdr, QObject *parent = 0);
+    ~AbsElfProgram();
+
+    QString get_type(void) const;
+    QString get_offset(void) const;
+    QString get_virtaddr(void) const;
+    QString get_phyaddr(void) const;
+    QString get_file_size(void) const;
+    QString get_mem_size(void) const;
+    QString get_flag(void) const;
+    QString get_align(void) const;
+
+private:
+    void parse_program_header(Elf_Phdr phdr);
+    bool is_program_header_ok(void);
 
 public:
     typedef enum PT_TYPE_VALUES {
@@ -36,7 +51,18 @@ public:
 signals:
     
 public slots:
+
+public:
+    QString type;
+    QString offset;
+    QString virt_addr;
+    QString phy_addr;
+    QString file_size;
+    QString mem_size;
+    QString flag;
+    QString align;
     
+    bool is_ok;
 };
 
 #endif // ABSELFPROGRAM_H

@@ -2,8 +2,10 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
+#include <QList>
 #include "ui_maindialog.h"
 #include "abselfheader.h"
+#include "abselfprogram.h"
 
 
 class MainDialog : public QDialog
@@ -12,6 +14,7 @@ class MainDialog : public QDialog
 public:
     explicit MainDialog(QWidget *parent = 0);
     
+    void parse_program_header(int offset, int num, unsigned char *start);
 signals:
     
 public slots:
@@ -24,9 +27,11 @@ private:
     void       display_elf_header(void);
 
 private:
-    Ui::MainDlg  *ui;
-    QString       file_name;
-    AbsElfHeader *elf_header;
+    Ui::MainDlg         *ui;
+    QString              file_name;
+    AbsElfHeader        *elf_header;
+
+    QList<AbsElfProgram> phdr_list;
 };
 
 #endif // MAINDIALOG_H

@@ -19,6 +19,13 @@ MainDialog::MainDialog(QWidget *parent) :
     setWindowIcon(QIcon(":images/elf_main.ico"));
 }
 
+void MainDialog::parse_program_header(int offset, int num, unsigned char *start)
+{
+    for (int i = 0; i < num; ++i) {
+
+    }
+}
+
 QString MainDialog::choose_file(void ) const
 {
     QString file_name = QFileDialog::getOpenFileName(0,
@@ -38,15 +45,18 @@ QString MainDialog::choose_file(void ) const
     return (file_name);
 }
 
-void MainDialog::do_parse_file()
+void MainDialog::do_parse_file(void)
 {
     QByteArray byte = open_file(ui->p_line_file_path->text());
 
+    /* 解析ELF文件头 */
     elf_header = new AbsElfHeader(byte);
 
     if ( elf_header->is_parse_ok()) {
         display_elf_header();
     }
+
+    /* 解析程序头部 */
 }
 
 void MainDialog::make_connections()

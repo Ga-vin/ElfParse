@@ -577,7 +577,7 @@ QString AbsElfHeader::get_machine(void) const
         machine_name.append("New type");
         break;
     default:
-        machine_name.append("未知类型");
+        machine_name.append(QObject::tr("未知类型"));
         break;
     }
 
