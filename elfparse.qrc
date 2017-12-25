@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/elf_main.ico</file>
+    </qresource>
+</RCC>
