@@ -14,7 +14,7 @@ class MainDialog : public QDialog
 public:
     explicit MainDialog(QWidget *parent = 0);
     
-    void parse_program_header(int offset, int num, unsigned char *start);
+    void parse_program_header(int offset, int num, int size, unsigned char *start);
 signals:
     
 public slots:
@@ -25,6 +25,9 @@ private:
     void       make_connections(void);
     QByteArray open_file(const QString file_name) const;
     void       display_elf_header(void);
+    void       display_program_header(void);
+    void       init_system(void);
+    void       make_phdr_table_empty(void);
 
 private:
     Ui::MainDlg         *ui;

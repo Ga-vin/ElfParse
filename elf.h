@@ -118,4 +118,5 @@ typedef Elf32_Phdr           Elf_Phdr;
 #define    ELF32_R_TYPE(t)                  ((t)&0xFF)
 #define    ELF32_R_INFO(s, t)               (((s)<<8) + ((t)&0xFF))
 
+
 #endif // ELF_H

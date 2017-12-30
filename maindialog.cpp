@@ -14,16 +14,41 @@ MainDialog::MainDialog(QWidget *parent) :
     ui->setupUi(this);
     QTextCodec::setCodecForTr(QTextCodec::codecForName("gb18030"));
 
+    init_system();
     make_connections();
     setWindowTitle(QObject::tr("ELF文件解析工具"));
     setWindowIcon(QIcon(":images/elf_main.ico"));
 }
 
-void MainDialog::parse_program_header(int offset, int num, unsigned char *start)
+void MainDialog::parse_program_header(int offset, int num, int size, unsigned char *start)
 {
-    for (int i = 0; i < num; ++i) {
+    unsigned char *p_data = start + offset;
 
+#ifdef __DEBUG_PRINT
+    qDebug() << "offset: " << offset << "num: " << num << "size: " << size;
+#endif
+    if ( size != sizeof(Elf_Phdr)) {
+        QMessageBox::warning(0,
+                             QObject::tr("警告"),
+                             QObject::tr("程序头部大小与ELF文件头部中记录不一致"));
+
+        return ;
     }
+
+    for (int i = 0; i < num; ++i) {
+        Elf_Phdr phdr;
+        AbsElfProgram::byte_to_phdr(p_data, &phdr);
+        AbsElfProgram ph(phdr);
+        phdr_list.append(ph);
+        p_data += size;
+    }
+#ifdef __DEBUG_PRINT
+    qDebug() << "list size: " << phdr_list.size();
+    qDebug() << "list[0] type: " << phdr_list.at(0).get_type() << "offset: " << phdr_list.at(0).get_offset();
+    qDebug() << "list[1] type: " << phdr_list.at(1).get_type() << "offset: " << phdr_list.at(1).get_offset();
+    qDebug() << "list[2] type: " << phdr_list.at(2).get_type() << "offset: " << phdr_list.at(2).get_offset();
+    qDebug() << "list[3] type: " << phdr_list.at(3).get_type() << "offset: " << phdr_list.at(3).get_offset();
+#endif
 }
 
 QString MainDialog::choose_file(void ) const
@@ -55,8 +80,19 @@ void MainDialog::do_parse_file(void)
     if ( elf_header->is_parse_ok()) {
         display_elf_header();
     }
+#ifdef __DEBUG_PRINT
+    qDebug() << "offset: " << elf_header->get_ph_offset() << "cnt: " << elf_header->get_ph_item_cnt() <<
+                "size: " << elf_header->get_ph_item_size();
+#endif
 
     /* 解析程序头部 */
+    this->parse_program_header(elf_header->get_ph_offset().toInt(0, 16),
+                               elf_header->get_ph_item_cnt().toInt(0, 16),
+                               elf_header->get_ph_item_size().toInt(0, 16),
+                               (unsigned char *)byte.data());
+    this->display_program_header();
+
+    /* 解析节区表 */
 }
 
 void MainDialog::make_connections()
@@ -113,4 +149,46 @@ void MainDialog::display_elf_header()
     ui->p_line_sh_size->setText(elf_header->get_sh_item_size());
     ui->p_line_sh_num->setText(elf_header->get_sh_item_cnt());
     ui->p_line_sh_str_index->setText(elf_header->get_sh_str_item_index());
+}
+
+void MainDialog::display_program_header(void)
+{
+    int row_cnt;
+
+    this->make_phdr_table_empty();
+
+    for (int i = 0; i < phdr_list.size(); ++i) {
+        row_cnt = this->ui->p_tab_phdr->rowCount();
+        this->ui->p_tab_phdr->insertRow(row_cnt);
+
+        this->ui->p_tab_phdr->setItem(row_cnt, 0, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_type())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 1, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_offset())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 2, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_virtaddr())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 3, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_phyaddr())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 4, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_file_size())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 5, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_mem_size())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 6, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_flag())));
+        this->ui->p_tab_phdr->setItem(row_cnt, 7, new QTableWidgetItem(QString("%1").arg(phdr_list.at(i).get_align())));
+    }
+    this->ui->p_tab_phdr->selectRow(row_cnt);
+}
+
+void MainDialog::init_system()
+{
+    //this->ui->p_tab_phdr->horizontalHeader()->setStretchLastSection(true);
+    this->ui->p_tab_phdr->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    this->ui->p_tab_shdr->horizontalHeader()->setStretchLastSection(true);
+
+    this->ui->p_tab_phdr->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->ui->p_tab_shdr->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    this->ui->p_tab_phdr->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->p_tab_shdr->setSelectionBehavior(QAbstractItemView::SelectRows);
+}
+
+void MainDialog::make_phdr_table_empty(void)
+{
+    for (int i = 0; i < this->ui->p_tab_phdr->rowCount(); ++i) {
+        this->ui->p_tab_phdr->removeRow(i);
+    }
 }

@@ -599,13 +599,13 @@ QString AbsElfHeader::get_ph_offset(void) const
     if ( !(p_elf_header->e_phoff)) {
         return (QString("%1").arg(QObject::tr("无程序头部表")));
     } else {
-        return (QString("0x%1%2").arg(p_elf_header->e_phoff, 0, 16).arg(QObject::tr("字节")));
+        return (QString("0x%1").arg(p_elf_header->e_phoff, 0, 16));
     }
 }
 
 QString AbsElfHeader::get_ph_item_size(void) const
 {
-    return (QString("0x%1%2").arg(p_elf_header->e_phentsize, 0, 16).arg(QObject::tr("字节")));
+    return (QString("0x%1").arg(p_elf_header->e_phentsize, 0, 16));
 }
 
 QString AbsElfHeader::get_ph_item_cnt(void) const
@@ -622,13 +622,13 @@ QString AbsElfHeader::get_sh_offset(void) const
     if ( !(p_elf_header->e_shoff)) {
         return (QString("%1").arg(QObject::tr("无节区头部表")));
     } else {
-        return (QString("0x%1%2").arg(p_elf_header->e_shoff, 0, 16).arg(QObject::tr("字节")));
+        return (QString("0x%1").arg(p_elf_header->e_shoff, 0, 16));
     }
 }
 
 QString AbsElfHeader::get_sh_item_size(void) const
 {
-    return (QString("0x%1%2").arg(p_elf_header->e_shentsize, 0, 16).arg(QObject::tr("字节")));
+    return (QString("0x%1").arg(p_elf_header->e_shentsize, 0, 16));
 }
 
 QString AbsElfHeader::get_sh_item_cnt() const

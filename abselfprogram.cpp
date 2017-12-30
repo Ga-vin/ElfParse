@@ -23,6 +23,20 @@ AbsElfProgram::AbsElfProgram(Elf_Phdr phdr, QObject *parent) :
     this->is_ok = true;
 }
 
+AbsElfProgram::AbsElfProgram(const AbsElfProgram &phdr, QObject *parent) :
+    QObject(parent)
+{
+    type      = phdr.get_type();
+    offset    = phdr.get_offset();
+    virt_addr = phdr.get_virtaddr();
+    phy_addr  = phdr.get_phyaddr();
+    file_size = phdr.get_file_size();
+    mem_size  = phdr.get_mem_size();
+    flag      = phdr.get_flag();
+    align     = phdr.get_align();
+    is_ok     = true;
+}
+
 AbsElfProgram::~AbsElfProgram()
 {
 
@@ -68,6 +82,60 @@ QString AbsElfProgram::get_align(void) const
     return (this->align);
 }
 
+void AbsElfProgram::byte_to_phdr(const uint8_t *p_start, Elf_Phdr *phdr)
+{
+    unsigned char *p_tmp = (unsigned char *)p_start;
+
+    phdr->p_type   = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_offset = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_vaddr  = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_paddr  = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_filesz = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_memsz  = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_flags  = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+    p_tmp         += 4;
+    phdr->p_align  = (*p_tmp << 24) | (*(p_tmp+1) << 16) | (*(p_tmp+2) << 8) | (*(p_tmp+3) << 0);
+}
+
+AbsElfProgram &AbsElfProgram::operator =(const AbsElfProgram &phdr)
+{
+    if ( *this == phdr) {
+        return (*this);
+    }
+
+    type      = phdr.get_type();
+    offset    = phdr.get_offset();
+    virt_addr = phdr.get_virtaddr();
+    phy_addr  = phdr.get_phyaddr();
+    file_size = phdr.get_file_size();
+    mem_size  = phdr.get_mem_size();
+    flag      = phdr.get_flag();
+    align     = phdr.get_align();
+    is_ok     = true;
+}
+
+bool AbsElfProgram::operator ==(const AbsElfProgram &phdr)
+{
+    if ( (this->get_type() == phdr.get_type()) &&
+         (this->get_offset() == phdr.get_offset()) &&
+         (this->get_virtaddr() == phdr.get_virtaddr()) &&
+         (this->get_phyaddr() == phdr.get_phyaddr()) &&
+         (this->get_file_size() == phdr.get_file_size()) &&
+         (this->get_mem_size() == phdr.get_mem_size()) &&
+         (this->get_flag() == phdr.get_flag()) &&
+         (this->get_align() == phdr.get_align())) {
+        return (true);
+    } else {
+        return (false);
+    }
+}
+
 void AbsElfProgram::parse_program_header(Elf_Phdr phdr)
 {
     switch (phdr.p_type) {
@@ -80,7 +148,7 @@ void AbsElfProgram::parse_program_header(Elf_Phdr phdr)
         break;
 
     case PT_DYNAMIC:
-        this->type = "DYNA";
+        this->type = "DYNAMIC";
         break;
 
     case PT_INTERP:
@@ -99,7 +167,7 @@ void AbsElfProgram::parse_program_header(Elf_Phdr phdr)
         this->type = "PHDR";
         break;
 
-    case PT_NUM:
+    case PT_TLS:
         this->type = "NUM";
         break;
 
@@ -117,6 +185,14 @@ void AbsElfProgram::parse_program_header(Elf_Phdr phdr)
 
     case PT_HIPROC:
         this->type = "HIPROC";
+        break;
+
+    case PT_GNU_EH_FRAME:
+        this->type = "EH_FRAME";
+        break;
+
+    case PT_GNU_STACK:
+        this->type = "STACK";
         break;
 
     default:

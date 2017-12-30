@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>1007</width>
-    <height>232</height>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -348,6 +348,102 @@
          </layout>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>程序头部表信息</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTableWidget" name="p_tab_phdr">
+        <column>
+         <property name="text">
+          <string>段类型</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>虚拟地址</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>物理地址</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>文件大小</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>内存大小</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>标志位</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>对齐方式</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>节区表信息</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QTableWidget" name="p_tab_shdr">
+        <column>
+         <property name="text">
+          <string>索引</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>名称</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>大小</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>虚拟地址</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>逻辑地址</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>偏移量</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>对齐方式</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>

@@ -10,6 +10,7 @@ class AbsElfProgram : public QObject
 public:
     explicit AbsElfProgram(QObject *parent = 0);
     AbsElfProgram(Elf_Phdr phdr, QObject *parent = 0);
+    AbsElfProgram(const AbsElfProgram &phdr, QObject *parent = 0);
     ~AbsElfProgram();
 
     QString get_type(void) const;
@@ -20,6 +21,11 @@ public:
     QString get_mem_size(void) const;
     QString get_flag(void) const;
     QString get_align(void) const;
+
+    static void byte_to_phdr(const uint8_t *p_start, Elf_Phdr *phdr);
+
+    AbsElfProgram &operator=(const AbsElfProgram &phdr);
+    bool           operator==(const AbsElfProgram &phdr);
 
 private:
     void parse_program_header(Elf_Phdr phdr);
@@ -34,11 +40,13 @@ public:
         PT_NOTE                  = 0x4,        /* Auxiliary informatio              */
         PT_SHLIB                 = 0x5,        /* Reserved                          */
         PT_PHDR                  = 0x6,        /* Entry for header table itself     */
-        PT_NUM                   = 0x7,        /* Number of defined types           */
+        PT_TLS                   = 0x7,        /* Number of defined types           */
         PT_LOOS                  = 0x60000000, /* Start of OS-specific              */
         PT_HIOS                  = 0x6FFFFFFF, /* End of OS-specific                */
         PT_LOPROC                = 0x70000000, /* Start of processor-specific       */
-        PT_HIPROC                = 0x7FFFFFFF  /* End of processor-specific         */
+        PT_HIPROC                = 0x7FFFFFFF, /* End of processor-specific         */
+        PT_GNU_EH_FRAME          = 0x6474E550,
+        PT_GNU_STACK             = (PT_LOOS + 0x474E551)
     } PT_Type_Values_e;
 
     typedef enum PT_FLAG_VALUES {
